@@ -1,27 +1,21 @@
 {
-  "overview": "CareBridge is a community-based health monitoring platform that connects volunteers, doctors, and administrators to track patient health in rural communities. Volunteers record patient vitals, doctors review records and provide advice, and alerts are automatically generated when readings fall outside safe ranges.",
+  "overview": "CareBridge is a community health monitoring platform with distinct role-based panels for doctors, patients, admins, and visitors. Each user type gets a tailored experience — doctors see their review workflow, patients see their own records, admins manage users and stats, and visitors get a public landing page.",
   "features": [
-    "Role-based access for doctors, volunteers, and admins",
-    "Patient registration with auto-generated patient codes",
-    "Vitals entry with live color-coded health status preview",
-    "Automatic health alerts for critical readings (high BP, low SpO2, etc.)",
-    "Doctor review panel with advice and mark-reviewed workflow",
-    "Dashboard with stats, active alerts, and workflow timeline",
-    "Patient detail modal with full health record history",
-    "Manage users with role assignment (admin)",
-    "Active alerts tracker with resolve capability"
+    "Doctor panel with clinical review workflow",
+    "Admin panel with user management and system stats",
+    "Patient panel showing personal health records only",
+    "Visitor public landing page (no login required)",
+    "Role-based routing — each role lands on their own panel",
+    "Visitor role added to user type system"
   ],
-  "category": "healthcare",
+  "category": "health-medical",
   "tags": [
     "health",
-    "medical",
-    "community",
     "monitoring",
-    "vitals",
-    "patients",
-    "alerts",
-    "doctor",
-    "volunteer"
+    "role-based",
+    "dashboard",
+    "medical",
+    "community"
   ],
-  "last_updated": "2026-04-13T05:30:44.819Z"
+  "last_updated": "2026-04-13T07:11:06.495Z"
 }

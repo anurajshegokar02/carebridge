@@ -4,7 +4,6 @@ import React from "react";
 import { createActor } from "./backend";
 import { Layout } from "./components/Layout";
 import { toNumber } from "./lib/utils";
-import Login from "./pages/Login";
 import type { PageName, User } from "./types";
 
 // Lazy-load pages
@@ -16,10 +15,14 @@ const DoctorReview = React.lazy(() => import("./pages/DoctorReview"));
 const ActiveAlerts = React.lazy(() => import("./pages/ActiveAlerts"));
 const ManageUsers = React.lazy(() => import("./pages/ManageUsers"));
 const MyRecords = React.lazy(() => import("./pages/MyRecords"));
+const DoctorPanel = React.lazy(() => import("./pages/DoctorPanel"));
+const AdminPanel = React.lazy(() => import("./pages/AdminPanel"));
+const VisitorPanel = React.lazy(() => import("./pages/VisitorPanel"));
 
 // Pages allowed per role
 const ROLE_ALLOWED_PAGES: Record<User["role"], PageName[]> = {
   admin: [
+    "admin-panel",
     "dashboard",
     "register",
     "patients",
@@ -28,13 +31,17 @@ const ROLE_ALLOWED_PAGES: Record<User["role"], PageName[]> = {
     "alerts",
     "users",
   ],
-  doctor: ["dashboard", "patients", "review", "alerts"],
+  doctor: ["doctor-panel", "dashboard", "patients", "review", "alerts"],
   volunteer: ["dashboard", "register", "patients", "vitals", "alerts"],
   patient: ["my-records"],
+  visitor: ["visitor-panel"],
 };
 
 function defaultPageForRole(role: User["role"]): PageName {
   if (role === "patient") return "my-records";
+  if (role === "doctor") return "doctor-panel";
+  if (role === "admin") return "admin-panel";
+  if (role === "visitor") return "visitor-panel";
   return "dashboard";
 }
 
@@ -62,7 +69,7 @@ export default function App() {
   // Guarded navigate — patients can only go to my-records
   const handleNavigate = React.useCallback(
     (page: PageName) => {
-      const role = currentUser?.role ?? "volunteer";
+      const role = (currentUser?.role ?? "visitor") as User["role"];
       const allowed = ROLE_ALLOWED_PAGES[role] ?? [];
       if (!allowed.includes(page)) return;
       setCurrentPage(page);
@@ -158,14 +165,18 @@ export default function App() {
   }
 
   if (!isAuthenticated) {
-    return <Login onLoginSuccess={() => {}} />;
+    return (
+      <React.Suspense fallback={<PageLoader />}>
+        <VisitorPanel />
+      </React.Suspense>
+    );
   }
 
   // Patient ID for the patient self-view (from user.patientId if present)
   const patientId = currentUser?.patientId ?? null;
 
   const renderPage = () => {
-    const role = currentUser?.role ?? "volunteer";
+    const role = (currentUser?.role ?? "visitor") as User["role"];
     const allowed = ROLE_ALLOWED_PAGES[role] ?? [];
 
     // Guard: if current page is not allowed for this role, show the default
@@ -174,6 +185,12 @@ export default function App() {
       : defaultPageForRole(role);
 
     switch (safePage) {
+      case "doctor-panel":
+        return <DoctorPanel onNavigate={handleNavigate} />;
+      case "admin-panel":
+        return <AdminPanel onNavigate={handleNavigate} />;
+      case "visitor-panel":
+        return <VisitorPanel />;
       case "dashboard":
         return <Dashboard onNavigate={handleNavigate} />;
       case "register":
@@ -194,6 +211,15 @@ export default function App() {
         return <Dashboard onNavigate={handleNavigate} />;
     }
   };
+
+  // Visitor-panel is full-page — no sidebar/layout chrome
+  if (currentUser?.role === "visitor" || currentPage === "visitor-panel") {
+    return (
+      <React.Suspense fallback={<PageLoader />}>
+        <VisitorPanel />
+      </React.Suspense>
+    );
+  }
 
   return (
     <Layout

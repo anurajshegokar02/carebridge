@@ -56,6 +56,7 @@ export const UserRole = IDL.Variant({
   'patient' : IDL.Null,
   'admin' : IDL.Null,
   'doctor' : IDL.Null,
+  'visitor' : IDL.Null,
   'volunteer' : IDL.Null,
 });
 export const User = IDL.Record({
@@ -264,6 +265,7 @@ export const idlFactory = ({ IDL }) => {
     'patient' : IDL.Null,
     'admin' : IDL.Null,
     'doctor' : IDL.Null,
+    'visitor' : IDL.Null,
     'volunteer' : IDL.Null,
   });
   const User = IDL.Record({

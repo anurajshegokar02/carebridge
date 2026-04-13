@@ -11,7 +11,12 @@ export type User = {
   patientId?: number;
 };
 
-export type UserRoleStr = "admin" | "doctor" | "volunteer" | "patient";
+export type UserRoleStr =
+  | "admin"
+  | "doctor"
+  | "volunteer"
+  | "patient"
+  | "visitor";
 
 export type Patient = {
   id: number;
@@ -110,4 +115,7 @@ export type PageName =
   | "review"
   | "alerts"
   | "users"
-  | "my-records";
+  | "my-records"
+  | "doctor-panel"
+  | "admin-panel"
+  | "visitor-panel";

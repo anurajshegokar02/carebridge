@@ -37,6 +37,7 @@ const ROLE_ICONS: Record<UserRoleStr, string> = {
   volunteer: "🤝",
   admin: "🛡️",
   patient: "🏥",
+  visitor: "👁️",
 };
 
 type FormState = {

@@ -64,6 +64,7 @@ export enum UserRole {
     patient = "patient",
     admin = "admin",
     doctor = "doctor",
+    visitor = "visitor",
     volunteer = "volunteer"
 }
 export interface backendInterface {

@@ -3,6 +3,7 @@ type UserRole =
    admin;
    doctor;
    patient;
+   visitor;
    volunteer;
  };
 type UserId = nat;

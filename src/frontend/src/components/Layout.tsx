@@ -39,6 +39,18 @@ const PAGE_META: Record<PageName, { title: string; subtitle: string }> = {
     title: "My Health Records",
     subtitle: "View your personal health data and vitals history",
   },
+  "doctor-panel": {
+    title: "Doctor Panel",
+    subtitle: "Your clinical workflow at a glance",
+  },
+  "admin-panel": {
+    title: "Admin Panel",
+    subtitle: "System overview and user management",
+  },
+  "visitor-panel": {
+    title: "CareBridge",
+    subtitle: "Community health monitoring platform",
+  },
 };
 
 interface LayoutProps {

@@ -9,6 +9,7 @@ module {
     #doctor;
     #volunteer;
     #patient;
+    #visitor;
   };
 
   public type User = {

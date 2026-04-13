@@ -9,12 +9,41 @@ type Alert__158530719 =
     recordId : Nat;
     resolved : Bool
   };
-type Counters__795302738 =
+type Alert__868750248 =
+  {
+    alertType : Text;
+    createdAt : Int;
+    id : Nat;
+    message : Text;
+    patientId : Nat;
+    recordId : Nat;
+    resolved : Bool
+  };
+type Counters__652393973 =
   {
     var nextAlertId : Nat;
     var nextPatientId : Nat;
     var nextRecordId : Nat;
     var nextUserId : Nat
+  };
+type HealthRecord__216916046 =
+  {
+    bpDiastolic : Nat;
+    bpSystolic : Nat;
+    checkDate : Text;
+    createdAt : Int;
+    doctorAdvice : Text;
+    glucose : Nat;
+    heartRate : Nat;
+    id : Nat;
+    patientId : Nat;
+    reviewed : Bool;
+    reviewedBy : Nat;
+    spo2 : Nat;
+    symptoms : Text;
+    temperature : Float;
+    visitType : Text;
+    volunteerId : Nat
   };
 type HealthRecord__980454242 =
   {
@@ -44,15 +73,32 @@ type List__790383201<T> =
   };
 type Nat__490723111 = Nat__920180692;
 type Nat__920180692 = Nat;
-type OldUserRole__889293160 = {#admin; #doctor; #volunteer};
+type OldUserRole__889293160 = {#admin; #doctor; #patient; #volunteer};
 type OldUser__655922588 =
   {
     createdAt : Int;
     email : Text;
     id : Nat;
     name : Text;
+    patientId : ?Nat;
     principal : Principal;
     role : OldUserRole__889293160
+  };
+type Patient__116075979 =
+  {
+    address : Text;
+    age : Nat;
+    condition : Text;
+    createdAt : Int;
+    gender : Text;
+    id : Nat;
+    name : Text;
+    notes : Text;
+    patientCode : Text;
+    phone : Text;
+    status : Text;
+    village : Text;
+    volunteerId : Nat
   };
 type Patient__512300474 =
   {
@@ -76,7 +122,7 @@ type Timestamp__778030842 = Timestamp__301639476;
 type UserId__1043627770 = UserId__158757552;
 type UserId__158757552 = Nat;
 type UserId__240306499 = UserId__158757552;
-type UserRole__41952412 = {#admin; #doctor; #patient; #volunteer};
+type UserRole__41952412 = {#admin; #doctor; #patient; #visitor; #volunteer};
 type User__98118558 =
   {
     createdAt : Timestamp__778030842;
@@ -88,10 +134,10 @@ type User__98118558 =
     role : UserRole__41952412
   };
 actor ({
-  in alerts : List__415060402<Alert__158530719>;
-  in counters : Counters__795302738;
-  in patients : List__415060402<Patient__512300474>;
-  in records : List__415060402<HealthRecord__980454242>;
+  in alerts : List__415060402<Alert__868750248>;
+  in counters : Counters__652393973;
+  in patients : List__415060402<Patient__116075979>;
+  in records : List__415060402<HealthRecord__216916046>;
   in users : List__415060402<OldUser__655922588>
 }, {
   stable alerts :

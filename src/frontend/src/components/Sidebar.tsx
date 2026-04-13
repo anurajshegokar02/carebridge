@@ -4,6 +4,7 @@ import {
   Heart,
   HeartPulse,
   LayoutDashboard,
+  Settings,
   ShieldCheck,
   Stethoscope,
   UserPlus,
@@ -21,6 +22,18 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
+  {
+    id: "admin-panel",
+    label: "Admin Panel",
+    icon: Settings,
+    roles: ["admin"],
+  },
+  {
+    id: "doctor-panel",
+    label: "My Panel",
+    icon: LayoutDashboard,
+    roles: ["doctor"],
+  },
   {
     id: "dashboard",
     label: "Dashboard",
@@ -87,7 +100,7 @@ export function Sidebar({
   const userRole = currentUser?.role ?? "volunteer";
 
   const visibleItems = NAV_ITEMS.filter((item) =>
-    item.roles.includes(userRole as User["role"]),
+    item.roles.includes(userRole as (typeof item.roles)[number]),
   );
 
   return (

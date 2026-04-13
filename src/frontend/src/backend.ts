@@ -146,6 +146,7 @@ export enum UserRole {
     patient = "patient",
     admin = "admin",
     doctor = "doctor",
+    visitor = "visitor",
     volunteer = "volunteer"
 }
 export interface backendInterface {
@@ -614,9 +615,11 @@ function from_candid_variant_n7(_uploadFile: (file: ExternalBlob) => Promise<Uin
 } | {
     doctor: null;
 } | {
+    visitor: null;
+} | {
     volunteer: null;
 }): UserRole {
-    return "patient" in value ? UserRole.patient : "admin" in value ? UserRole.admin : "doctor" in value ? UserRole.doctor : "volunteer" in value ? UserRole.volunteer : value;
+    return "patient" in value ? UserRole.patient : "admin" in value ? UserRole.admin : "doctor" in value ? UserRole.doctor : "visitor" in value ? UserRole.visitor : "volunteer" in value ? UserRole.volunteer : value;
 }
 function from_candid_vec_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<{
     patient: _Patient;
@@ -648,6 +651,8 @@ function to_candid_variant_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8
 } | {
     doctor: null;
 } | {
+    visitor: null;
+} | {
     volunteer: null;
 } {
     return value == UserRole.patient ? {
@@ -656,6 +661,8 @@ function to_candid_variant_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8
         admin: null
     } : value == UserRole.doctor ? {
         doctor: null
+    } : value == UserRole.visitor ? {
+        visitor: null
     } : value == UserRole.volunteer ? {
         volunteer: null
     } : value;

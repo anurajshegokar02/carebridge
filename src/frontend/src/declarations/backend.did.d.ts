@@ -66,6 +66,7 @@ export type UserId = bigint;
 export type UserRole = { 'patient' : null } |
   { 'admin' : null } |
   { 'doctor' : null } |
+  { 'visitor' : null } |
   { 'volunteer' : null };
 export interface _SERVICE {
   'createPatient' : ActorMethod<
