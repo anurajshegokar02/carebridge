@@ -6,9 +6,9 @@ import UsersMixin "mixins/users-api";
 import PatientsMixin "mixins/patients-api";
 import StatsMixin "mixins/stats-api";
 import SeedMixin "mixins/seed-api";
-import Migration "migration";
 
-(with migration = Migration.run)
+
+
 actor {
   let users = List.empty<UTypes.User>();
   let patients = List.empty<PTypes.Patient>();

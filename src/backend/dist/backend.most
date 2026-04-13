@@ -1,4 +1,4 @@
-// Version: 3.0.0
+// Version: 1.0.0
 type Alert__158530719 =
   {
     alertType : Text;
@@ -8,42 +8,6 @@ type Alert__158530719 =
     patientId : Nat;
     recordId : Nat;
     resolved : Bool
-  };
-type Alert__868750248 =
-  {
-    alertType : Text;
-    createdAt : Int;
-    id : Nat;
-    message : Text;
-    patientId : Nat;
-    recordId : Nat;
-    resolved : Bool
-  };
-type Counters__652393973 =
-  {
-    var nextAlertId : Nat;
-    var nextPatientId : Nat;
-    var nextRecordId : Nat;
-    var nextUserId : Nat
-  };
-type HealthRecord__216916046 =
-  {
-    bpDiastolic : Nat;
-    bpSystolic : Nat;
-    checkDate : Text;
-    createdAt : Int;
-    doctorAdvice : Text;
-    glucose : Nat;
-    heartRate : Nat;
-    id : Nat;
-    patientId : Nat;
-    reviewed : Bool;
-    reviewedBy : Nat;
-    spo2 : Nat;
-    symptoms : Text;
-    temperature : Float;
-    visitType : Text;
-    volunteerId : Nat
   };
 type HealthRecord__980454242 =
   {
@@ -64,42 +28,8 @@ type HealthRecord__980454242 =
     visitType : Text;
     volunteerId : UserId__240306499
   };
-type List__415060402<T> = List__790383201<T>;
-type List__790383201<T> =
-  {
-    var blockIndex : Nat__490723111;
-    var blocks : [var [var ?T]];
-    var elementIndex : Nat__490723111
-  };
 type Nat__490723111 = Nat__920180692;
 type Nat__920180692 = Nat;
-type OldUserRole__889293160 = {#admin; #doctor; #patient; #volunteer};
-type OldUser__655922588 =
-  {
-    createdAt : Int;
-    email : Text;
-    id : Nat;
-    name : Text;
-    patientId : ?Nat;
-    principal : Principal;
-    role : OldUserRole__889293160
-  };
-type Patient__116075979 =
-  {
-    address : Text;
-    age : Nat;
-    condition : Text;
-    createdAt : Int;
-    gender : Text;
-    id : Nat;
-    name : Text;
-    notes : Text;
-    patientCode : Text;
-    phone : Text;
-    status : Text;
-    village : Text;
-    volunteerId : Nat
-  };
 type Patient__512300474 =
   {
     address : Text;
@@ -133,13 +63,7 @@ type User__98118558 =
     principal : Principal;
     role : UserRole__41952412
   };
-actor ({
-  in alerts : List__415060402<Alert__868750248>;
-  in counters : Counters__652393973;
-  in patients : List__415060402<Patient__116075979>;
-  in records : List__415060402<HealthRecord__216916046>;
-  in users : List__415060402<OldUser__655922588>
-}, {
+actor {
   stable alerts :
     {
       var blockIndex : Nat__490723111;
@@ -171,4 +95,4 @@ actor ({
       var blocks : [var [var ?User__98118558]];
       var elementIndex : Nat__490723111
     }
-}) ;
+};

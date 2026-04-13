@@ -18,6 +18,7 @@ const MyRecords = React.lazy(() => import("./pages/MyRecords"));
 const DoctorPanel = React.lazy(() => import("./pages/DoctorPanel"));
 const AdminPanel = React.lazy(() => import("./pages/AdminPanel"));
 const VisitorPanel = React.lazy(() => import("./pages/VisitorPanel"));
+const SignUp = React.lazy(() => import("./pages/SignUp"));
 
 // Pages allowed per role
 const ROLE_ALLOWED_PAGES: Record<User["role"], PageName[]> = {
@@ -53,6 +54,21 @@ function PageLoader() {
   );
 }
 
+function FullPageLoader({ message }: { message: string }) {
+  return (
+    <div
+      className="min-h-screen flex flex-col items-center justify-center gap-4"
+      style={{
+        background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+      }}
+      data-ocid="full-page-loader"
+    >
+      <div className="w-8 h-8 border-2 border-teal-500/30 border-t-teal-400 rounded-full animate-spin" />
+      <p className="text-white/50 text-sm">{message}</p>
+    </div>
+  );
+}
+
 export default function App() {
   const { identity, loginStatus, clear } = useInternetIdentity();
   const { actor, isFetching: actorFetching } = useActor(createActor);
@@ -61,8 +77,10 @@ export default function App() {
   const [currentPage, setCurrentPage] = React.useState<PageName>("dashboard");
   const [currentUser, setCurrentUser] = React.useState<User | null>(null);
   const [userLoading, setUserLoading] = React.useState(false);
+  const [userChecked, setUserChecked] = React.useState(false);
   const [alertCount, setAlertCount] = React.useState(0);
   const [seedDone, setSeedDone] = React.useState(false);
+  const [_actorError, setActorError] = React.useState<string | null>(null);
 
   const isAuthenticated = loginStatus === "success" && !!identity;
 
@@ -79,40 +97,61 @@ export default function App() {
 
   // Fetch current user once actor is ready and authenticated
   React.useEffect(() => {
-    if (!actor || actorFetching || !isAuthenticated) return;
+    if (!isAuthenticated) {
+      setUserChecked(false);
+      setCurrentUser(null);
+      return;
+    }
+    if (!actor || actorFetching) return;
 
     let cancelled = false;
 
     const init = async () => {
       setUserLoading(true);
+      setActorError(null);
       try {
         // Seed demo data once per session
         if (!seedDone) {
           try {
             await actor.seedDemoData();
           } catch {
-            /* ignore */
+            /* ignore seed errors */
           }
           setSeedDone(true);
         }
 
         const u = await actor.getCurrentUser();
-        if (!cancelled && u) {
-          const role = u.role as unknown as User["role"];
-          const mapped: User = {
-            id: toNumber(u.id),
-            principal: u.principal.toString(),
-            name: u.name,
-            email: u.email,
-            role,
-            createdAt: toNumber(u.createdAt),
-          };
-          setCurrentUser(mapped);
-          // Auto-navigate based on role
-          setCurrentPage(defaultPageForRole(role));
+        if (!cancelled) {
+          if (u) {
+            const role = u.role as unknown as User["role"];
+            const mapped: User = {
+              id: toNumber(u.id),
+              principal: u.principal.toString(),
+              name: u.name,
+              email: u.email,
+              role,
+              createdAt: toNumber(u.createdAt),
+              patientId:
+                u.patientId != null ? toNumber(u.patientId) : undefined,
+            };
+            setCurrentUser(mapped);
+            setCurrentPage(defaultPageForRole(role));
+          }
+          // u === null means authenticated but not registered — show signup
+          setUserChecked(true);
         }
-      } catch {
-        // user may not be registered yet
+      } catch (err) {
+        if (!cancelled) {
+          const msg = err instanceof Error ? err.message : String(err);
+          // If CANISTER_ID_BACKEND is not configured, show a helpful error
+          if (msg.includes("CANISTER_ID_BACKEND") || msg.includes("canister")) {
+            setActorError(
+              "Backend connection unavailable. The app may still be deploying. Please wait a moment and refresh.",
+            );
+          }
+          // user may not be registered yet — still set checked so signup shows
+          setUserChecked(true);
+        }
       } finally {
         if (!cancelled) setUserLoading(false);
       }
@@ -126,7 +165,13 @@ export default function App() {
 
   // Poll alert count (skip for patients — they have their own alert view)
   React.useEffect(() => {
-    if (!actor || !isAuthenticated || currentUser?.role === "patient") return;
+    if (
+      !actor ||
+      !isAuthenticated ||
+      currentUser?.role === "patient" ||
+      !currentUser
+    )
+      return;
     const fetchAlerts = async () => {
       try {
         const alerts = await actor.getAlerts();
@@ -138,7 +183,7 @@ export default function App() {
     fetchAlerts();
     const interval = setInterval(fetchAlerts, 30_000);
     return () => clearInterval(interval);
-  }, [actor, isAuthenticated, currentUser?.role]);
+  }, [actor, isAuthenticated, currentUser]);
 
   const handleLogout = async () => {
     await clear();
@@ -147,27 +192,45 @@ export default function App() {
     setCurrentPage("dashboard");
     setSeedDone(false);
     setAlertCount(0);
+    setUserChecked(false);
+    setActorError(null);
   };
 
-  // Show loading while auth is resolving
-  if (loginStatus === "logging-in" || (isAuthenticated && userLoading)) {
-    return (
-      <div
-        className="min-h-screen flex flex-col items-center justify-center gap-4"
-        style={{
-          background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-        }}
-      >
-        <div className="w-8 h-8 border-2 border-teal-500/30 border-t-teal-400 rounded-full animate-spin" />
-        <p className="text-white/50 text-sm">Loading CareBridge...</p>
-      </div>
-    );
+  const handleRegistered = (user: User) => {
+    setCurrentUser(user);
+    setCurrentPage(defaultPageForRole(user.role));
+    setUserChecked(true);
+  };
+
+  // Show loading while auth is initializing
+  if (loginStatus === "initializing") {
+    return <FullPageLoader message="Initializing CareBridge..." />;
   }
 
+  // Show loading while logging in or loading user profile
+  if (loginStatus === "logging-in" || (isAuthenticated && userLoading)) {
+    return <FullPageLoader message="Loading CareBridge..." />;
+  }
+
+  // Not authenticated — show visitor panel / landing
   if (!isAuthenticated) {
     return (
       <React.Suspense fallback={<PageLoader />}>
         <VisitorPanel />
+      </React.Suspense>
+    );
+  }
+
+  // Authenticated but actor hasn't initialized yet
+  if (!userChecked) {
+    return <FullPageLoader message="Connecting to backend..." />;
+  }
+
+  // Authenticated but not registered — show sign-up
+  if (!currentUser) {
+    return (
+      <React.Suspense fallback={<PageLoader />}>
+        <SignUp onRegistered={handleRegistered} onLogout={handleLogout} />
       </React.Suspense>
     );
   }
