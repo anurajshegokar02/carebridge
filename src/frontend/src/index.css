@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-display: "Playfair Display", serif;
+    --font-body: "DM Sans", sans-serif;
+    --font-mono: monospace;
+    --radius: 0.5rem;
+
+    /* CareBridge brand tokens */
+    --teal: #0d9488;
+    --navy: #0f172a;
+    --slate: #334155;
+    --muted-color: #64748b;
+    --border-color: #e2e8f0;
+    --bg-color: #f8fafc;
+
+    --background: 0.977 0.005 240;
+    --foreground: 0.18 0.02 240;
+    --card: 1.0 0 0;
+    --card-foreground: 0.18 0.02 240;
+    --popover: 1.0 0 0;
+    --popover-foreground: 0.18 0.02 240;
+
+    --primary: 0.52 0.13 181;
+    --primary-foreground: 0.98 0 0;
+
+    --secondary: 0.95 0.005 240;
+    --secondary-foreground: 0.18 0.02 240;
+    --muted: 0.93 0.005 240;
+    --muted-foreground: 0.47 0.02 240;
+
+    --accent: 0.52 0.13 181;
+    --accent-foreground: 0.98 0 0;
+
+    --destructive: 0.52 0.22 24;
+    --destructive-foreground: 0.98 0 0;
+
+    --border: 0.9 0.005 240;
+    --input: 0.9 0.005 240;
+    --ring: 0.52 0.13 181;
+
+    --chart-1: 0.52 0.13 181;
+    --chart-2: 0.65 0.21 30;
+    --chart-3: 0.38 0.12 265;
+    --chart-4: 0.72 0.18 85;
+    --chart-5: 0.55 0.09 210;
+
+    /* Sidebar tokens — navy */
+    --sidebar: 0.13 0.02 240;
+    --sidebar-foreground: 0.95 0 0;
+    --sidebar-primary: 0.62 0.14 181;
+    --sidebar-primary-foreground: 0.1 0 0;
+    --sidebar-accent: 0.2 0.02 240;
+    --sidebar-accent-foreground: 0.9 0 0;
+    --sidebar-border: 0.22 0.02 240;
+    --sidebar-ring: 0.62 0.14 181;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    font-family: var(--font-body);
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+  }
+}
+
+@font-face {
+  font-family: "DM Sans";
+  src: url("/assets/fonts/DMSans.woff2") format("woff2");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Fraunces";
+  src: url("/assets/fonts/Fraunces.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer utilities {
+  .transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .font-body {
+    font-family: var(--font-body);
+  }
+
+  /* Vital status utility classes */
+  .status-normal {
+    @apply bg-teal-50 text-teal-700 border border-teal-200;
+  }
+  .status-warning {
+    @apply bg-amber-50 text-amber-700 border border-amber-200;
+  }
+  .status-critical {
+    @apply bg-red-50 text-red-700 border border-red-200;
+  }
+
+  .vital-card {
+    @apply rounded-lg border border-border bg-card p-3;
+  }
+
+  /* Page fade-in animation */
+  .page-enter {
+    animation: fadeInPage 0.25s ease-out forwards;
+  }
+
+  /* Sidebar active state */
+  .nav-item-active {
+    background-color: oklch(0.62 0.14 181 / 0.2);
+    color: #5eead4;
+    border-left: 3px solid #0d9488;
+  }
+  .nav-item-active svg {
+    color: #5eead4;
+  }
+}
+
+@keyframes fadeInPage {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(0.7 0 0 / 0.3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.7 0 0 / 0.5);
+}

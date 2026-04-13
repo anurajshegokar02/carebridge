@@ -1,0 +1,124 @@
+type UserRole = 
+ variant {
+   admin;
+   doctor;
+   volunteer;
+ };
+type UserId = nat;
+type User = 
+ record {
+   createdAt: Timestamp;
+   email: text;
+   id: UserId;
+   name: text;
+   "principal": principal;
+   role: UserRole;
+ };
+type Timestamp = int;
+type Patient = 
+ record {
+   address: text;
+   age: nat;
+   condition: text;
+   createdAt: Timestamp;
+   gender: text;
+   id: nat;
+   name: text;
+   notes: text;
+   patientCode: text;
+   phone: text;
+   status: text;
+   village: text;
+   volunteerId: UserId;
+ };
+type HealthRecord = 
+ record {
+   bpDiastolic: nat;
+   bpSystolic: nat;
+   checkDate: text;
+   createdAt: Timestamp;
+   doctorAdvice: text;
+   glucose: nat;
+   heartRate: nat;
+   id: nat;
+   patientId: nat;
+   reviewed: bool;
+   reviewedBy: UserId;
+   spo2: nat;
+   symptoms: text;
+   temperature: float64;
+   visitType: text;
+   volunteerId: UserId;
+ };
+type Alert = 
+ record {
+   alertType: text;
+   createdAt: Timestamp;
+   id: nat;
+   message: text;
+   patientId: nat;
+   recordId: nat;
+   resolved: bool;
+ };
+service : {
+  createPatient: (name: text, age: nat, gender: text, phone: text, village:
+   text, address: text, condition: text, volunteerId: nat, notes: text) ->
+   (Patient);
+  createRecord: (patientId: nat, visitType: text, bpSystolic: nat,
+   bpDiastolic: nat, glucose: nat, heartRate: nat, spo2: nat, temperature:
+   float64, symptoms: text, checkDate: text) ->
+   (record {
+      alerts: vec Alert;
+      "record": HealthRecord;
+    });
+  createUser: (name: text, email: text, role: UserRole) -> (User);
+  getAlerts: () ->
+   (vec
+     record {
+       alert: Alert;
+       patientCode: text;
+       patientName: text;
+       village: text;
+     }) query;
+  getCurrentUser: () -> (opt User) query;
+  getPatient: (id: nat) ->
+   (opt
+     record {
+       patient: Patient;
+       records: vec HealthRecord;
+       volunteerName: text;
+     }) query;
+  getPatients: () ->
+   (vec record {
+          lastCheck: opt text;
+          patient: Patient;
+          volunteerName: text;
+        }) query;
+  getRecords: (reviewed: opt bool, patientId: opt nat) ->
+   (vec
+     record {
+       patientCode: text;
+       patientName: text;
+       "record": HealthRecord;
+       village: text;
+     }) query;
+  getStats: () ->
+   (record {
+      activeAlerts: nat;
+      activeVolunteers: nat;
+      alertPatients: nat;
+      pendingReview: nat;
+      recordsToday: nat;
+      totalPatients: nat;
+      totalRecords: nat;
+    }) query;
+  getUsers: () -> (vec User) query;
+  getVolunteers: () -> (vec User) query;
+  registerUser: (name: text, email: text, role: UserRole) -> (User);
+  resolveAlert: (alertId: nat) -> (opt Alert);
+  reviewRecord: (recordId: nat, advice: text) -> (opt HealthRecord);
+  seedDemoData: () -> (text);
+  updatePatient: (id: nat, condition: text, status: text, notes: text) ->
+   (opt Patient);
+  updateUserRole: (userId: nat, role: UserRole) -> (opt User);
+}

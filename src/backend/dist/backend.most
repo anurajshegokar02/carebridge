@@ -1,0 +1,97 @@
+// Version: 1.0.0
+type Alert__158530719 =
+  {
+    alertType : Text;
+    createdAt : Timestamp__693416333;
+    id : Nat;
+    message : Text;
+    patientId : Nat;
+    recordId : Nat;
+    resolved : Bool
+  };
+type HealthRecord__980454242 =
+  {
+    bpDiastolic : Nat;
+    bpSystolic : Nat;
+    checkDate : Text;
+    createdAt : Timestamp__693416333;
+    doctorAdvice : Text;
+    glucose : Nat;
+    heartRate : Nat;
+    id : Nat;
+    patientId : Nat;
+    reviewed : Bool;
+    reviewedBy : UserId__240306499;
+    spo2 : Nat;
+    symptoms : Text;
+    temperature : Float;
+    visitType : Text;
+    volunteerId : UserId__240306499
+  };
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Patient__512300474 =
+  {
+    address : Text;
+    age : Nat;
+    condition : Text;
+    createdAt : Timestamp__693416333;
+    gender : Text;
+    id : Nat;
+    name : Text;
+    notes : Text;
+    patientCode : Text;
+    phone : Text;
+    status : Text;
+    village : Text;
+    volunteerId : UserId__240306499
+  };
+type Timestamp__301639476 = Int;
+type Timestamp__693416333 = Timestamp__301639476;
+type Timestamp__778030842 = Timestamp__301639476;
+type UserId__1043627770 = UserId__158757552;
+type UserId__158757552 = Nat;
+type UserId__240306499 = UserId__158757552;
+type UserRole__41952412 = {#admin; #doctor; #volunteer};
+type User__98118558 =
+  {
+    createdAt : Timestamp__778030842;
+    email : Text;
+    id : UserId__1043627770;
+    name : Text;
+    principal : Principal;
+    role : UserRole__41952412
+  };
+actor {
+  stable alerts :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?Alert__158530719]];
+      var elementIndex : Nat__490723111
+    };
+  stable counters :
+    {
+      var nextAlertId : Nat;
+      var nextPatientId : Nat;
+      var nextRecordId : Nat;
+      var nextUserId : Nat
+    };
+  stable patients :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?Patient__512300474]];
+      var elementIndex : Nat__490723111
+    };
+  stable records :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?HealthRecord__980454242]];
+      var elementIndex : Nat__490723111
+    };
+  stable users :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?User__98118558]];
+      var elementIndex : Nat__490723111
+    }
+};
