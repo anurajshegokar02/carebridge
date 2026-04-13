@@ -1,6 +1,6 @@
 export { UserRole } from "./backend.d";
 
-// Re-export backend primitive types with JS-friendly bigint→number conversions
+// Re-export backend primitive types with JS-friendly bigint->number conversions
 export type User = {
   id: number;
   principal: string;
@@ -8,9 +8,10 @@ export type User = {
   email: string;
   role: UserRoleStr;
   createdAt: number;
+  patientId?: number;
 };
 
-export type UserRoleStr = "admin" | "doctor" | "volunteer";
+export type UserRoleStr = "admin" | "doctor" | "volunteer" | "patient";
 
 export type Patient = {
   id: number;
@@ -96,6 +97,11 @@ export type Stats = {
   alertPatients: number;
 };
 
+export type MyRecord = {
+  patient: Patient;
+  records: HealthRecord[];
+};
+
 export type PageName =
   | "dashboard"
   | "register"
@@ -103,4 +109,5 @@ export type PageName =
   | "vitals"
   | "review"
   | "alerts"
-  | "users";
+  | "users"
+  | "my-records";

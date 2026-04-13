@@ -53,6 +53,7 @@ export const HealthRecord = IDL.Record({
   'reviewed' : IDL.Bool,
 });
 export const UserRole = IDL.Variant({
+  'patient' : IDL.Null,
   'admin' : IDL.Null,
   'doctor' : IDL.Null,
   'volunteer' : IDL.Null,
@@ -60,6 +61,7 @@ export const UserRole = IDL.Variant({
 export const User = IDL.Record({
   'id' : UserId,
   'principal' : IDL.Principal,
+  'patientId' : IDL.Opt(IDL.Nat),
   'name' : IDL.Text,
   'createdAt' : Timestamp,
   'role' : UserRole,
@@ -114,6 +116,33 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'getCurrentUser' : IDL.Func([], [IDL.Opt(User)], ['query']),
+  'getMyAlerts' : IDL.Func(
+      [],
+      [
+        IDL.Vec(
+          IDL.Record({
+            'alert' : Alert,
+            'village' : IDL.Text,
+            'patientCode' : IDL.Text,
+            'patientName' : IDL.Text,
+          })
+        ),
+      ],
+      ['query'],
+    ),
+  'getMyRecord' : IDL.Func(
+      [],
+      [
+        IDL.Opt(
+          IDL.Record({
+            'patient' : Patient,
+            'volunteerName' : IDL.Text,
+            'records' : IDL.Vec(HealthRecord),
+          })
+        ),
+      ],
+      ['query'],
+    ),
   'getPatient' : IDL.Func(
       [IDL.Nat],
       [
@@ -171,6 +200,7 @@ export const idlService = IDL.Service({
     ),
   'getUsers' : IDL.Func([], [IDL.Vec(User)], ['query']),
   'getVolunteers' : IDL.Func([], [IDL.Vec(User)], ['query']),
+  'linkPatientAccount' : IDL.Func([IDL.Nat, IDL.Nat], [IDL.Opt(User)], []),
   'registerUser' : IDL.Func([IDL.Text, IDL.Text, UserRole], [User], []),
   'resolveAlert' : IDL.Func([IDL.Nat], [IDL.Opt(Alert)], []),
   'reviewRecord' : IDL.Func([IDL.Nat, IDL.Text], [IDL.Opt(HealthRecord)], []),
@@ -231,6 +261,7 @@ export const idlFactory = ({ IDL }) => {
     'reviewed' : IDL.Bool,
   });
   const UserRole = IDL.Variant({
+    'patient' : IDL.Null,
     'admin' : IDL.Null,
     'doctor' : IDL.Null,
     'volunteer' : IDL.Null,
@@ -238,6 +269,7 @@ export const idlFactory = ({ IDL }) => {
   const User = IDL.Record({
     'id' : UserId,
     'principal' : IDL.Principal,
+    'patientId' : IDL.Opt(IDL.Nat),
     'name' : IDL.Text,
     'createdAt' : Timestamp,
     'role' : UserRole,
@@ -292,6 +324,33 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getCurrentUser' : IDL.Func([], [IDL.Opt(User)], ['query']),
+    'getMyAlerts' : IDL.Func(
+        [],
+        [
+          IDL.Vec(
+            IDL.Record({
+              'alert' : Alert,
+              'village' : IDL.Text,
+              'patientCode' : IDL.Text,
+              'patientName' : IDL.Text,
+            })
+          ),
+        ],
+        ['query'],
+      ),
+    'getMyRecord' : IDL.Func(
+        [],
+        [
+          IDL.Opt(
+            IDL.Record({
+              'patient' : Patient,
+              'volunteerName' : IDL.Text,
+              'records' : IDL.Vec(HealthRecord),
+            })
+          ),
+        ],
+        ['query'],
+      ),
     'getPatient' : IDL.Func(
         [IDL.Nat],
         [
@@ -349,6 +408,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getUsers' : IDL.Func([], [IDL.Vec(User)], ['query']),
     'getVolunteers' : IDL.Func([], [IDL.Vec(User)], ['query']),
+    'linkPatientAccount' : IDL.Func([IDL.Nat, IDL.Nat], [IDL.Opt(User)], []),
     'registerUser' : IDL.Func([IDL.Text, IDL.Text, UserRole], [User], []),
     'resolveAlert' : IDL.Func([IDL.Nat], [IDL.Opt(Alert)], []),
     'reviewRecord' : IDL.Func([IDL.Nat, IDL.Text], [IDL.Opt(HealthRecord)], []),

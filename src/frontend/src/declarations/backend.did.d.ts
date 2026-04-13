@@ -56,13 +56,15 @@ export type Timestamp = bigint;
 export interface User {
   'id' : UserId,
   'principal' : Principal,
+  'patientId' : [] | [bigint],
   'name' : string,
   'createdAt' : Timestamp,
   'role' : UserRole,
   'email' : string,
 }
 export type UserId = bigint;
-export type UserRole = { 'admin' : null } |
+export type UserRole = { 'patient' : null } |
+  { 'admin' : null } |
   { 'doctor' : null } |
   { 'volunteer' : null };
 export interface _SERVICE {
@@ -98,6 +100,27 @@ export interface _SERVICE {
     >
   >,
   'getCurrentUser' : ActorMethod<[], [] | [User]>,
+  'getMyAlerts' : ActorMethod<
+    [],
+    Array<
+      {
+        'alert' : Alert,
+        'village' : string,
+        'patientCode' : string,
+        'patientName' : string,
+      }
+    >
+  >,
+  'getMyRecord' : ActorMethod<
+    [],
+    [] | [
+      {
+        'patient' : Patient,
+        'volunteerName' : string,
+        'records' : Array<HealthRecord>,
+      }
+    ]
+  >,
   'getPatient' : ActorMethod<
     [bigint],
     [] | [
@@ -143,6 +166,7 @@ export interface _SERVICE {
   >,
   'getUsers' : ActorMethod<[], Array<User>>,
   'getVolunteers' : ActorMethod<[], Array<User>>,
+  'linkPatientAccount' : ActorMethod<[bigint, bigint], [] | [User]>,
   'registerUser' : ActorMethod<[string, string, UserRole], User>,
   'resolveAlert' : ActorMethod<[bigint], [] | [Alert]>,
   'reviewRecord' : ActorMethod<[bigint, string], [] | [HealthRecord]>,

@@ -20,7 +20,7 @@ mixin (
 
     let placeholder = Principal.fromText("aaaaa-aa");
 
-    // Seed 3 default users
+    // Seed staff users (ids 1, 2, 3)
     ignore UserLib.create(users, counters.nextUserId, placeholder, "Dr. Sarah Ahmed", "doctor@carebridge.com", #doctor);
     counters.nextUserId += 1;
     ignore UserLib.create(users, counters.nextUserId, placeholder, "Sunita Devi", "sunita@carebridge.com", #volunteer);
@@ -31,7 +31,7 @@ mixin (
     // Volunteer id is 2 (Sunita Devi)
     let volunteerId = 2;
 
-    // Seed 2 sample patients
+    // Seed 2 sample patients (ids 1, 2)
     ignore PatientLib.create(patients, counters.nextPatientId, "Ramesh Kumar", 58, "Male", "9876543210", "Sunder Nagar", "House 12, Sunder Nagar", "Hypertension", volunteerId, "Long-term hypertension patient");
     counters.nextPatientId += 1;
     ignore PatientLib.create(patients, counters.nextPatientId, "Meena Devi", 45, "Female", "9876543211", "Green Valley", "House 5, Green Valley", "Diabetes", volunteerId, "Type 2 diabetes, controlled diet");
@@ -70,6 +70,11 @@ mixin (
     );
     counters.nextRecordId += 1;
     counters.nextAlertId += r3.alerts.size();
+
+    // Seed demo patient user (id 4) linked to patient record 1 (Ramesh Kumar)
+    let patientUser = UserLib.create(users, counters.nextUserId, placeholder, "John Patient", "patient@carebridge.com", #patient);
+    counters.nextUserId += 1;
+    ignore UserLib.linkPatient(users, patientUser.id, 1);
 
     "Seeded";
   };

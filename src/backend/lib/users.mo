@@ -37,6 +37,7 @@ module {
       name = name;
       email = email;
       role = role;
+      patientId = null;
       createdAt = Time.now();
     };
     users.add(user);
@@ -48,6 +49,18 @@ module {
     users.mapInPlace(func(u) {
       if (u.id == userId) {
         let newUser = { u with role = role };
+        updated := ?newUser;
+        newUser;
+      } else { u };
+    });
+    updated;
+  };
+
+  public func linkPatient(users : List.List<User>, userId : Nat, patientId : Nat) : ?User {
+    var updated : ?User = null;
+    users.mapInPlace(func(u) {
+      if (u.id == userId) {
+        let newUser = { u with patientId = ?patientId };
         updated := ?newUser;
         newUser;
       } else { u };

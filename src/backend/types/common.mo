@@ -8,4 +8,11 @@ module {
     var nextRecordId : Nat;
     var nextAlertId : Nat;
   };
+
+  public type StableCounters = {
+    nextUserId : Nat;
+    nextPatientId : Nat;
+    nextRecordId : Nat;
+    nextAlertId : Nat;
+  };
 };

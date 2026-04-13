@@ -84,6 +84,23 @@ module {
     };
   };
 
+  // Find the patient linked to a given user account
+  public func getByUserId(
+    patients : List.List<Patient>,
+    users : List.List<User>,
+    userId : Nat,
+  ) : ?Patient {
+    switch (users.find(func(u) { u.id == userId })) {
+      case null { null };
+      case (?u) {
+        switch (u.patientId) {
+          case null { null };
+          case (?pid) { patients.find(func(p) { p.id == pid }) };
+        };
+      };
+    };
+  };
+
   public func create(
     patients : List.List<Patient>,
     nextId : Nat,
@@ -263,6 +280,21 @@ module {
     alerts : List.List<Alert>,
   ) : [AlertWithMeta] {
     alerts.filter(func(a) { not a.resolved }).map<Alert, AlertWithMeta>(func(a) {
+      let (patientName, patientCode, village) = switch (patients.find(func(p) { p.id == a.patientId })) {
+        case (?p) { (p.name, p.patientCode, p.village) };
+        case null { ("Unknown", "P000", "Unknown") };
+      };
+      { alert = a; patientName; patientCode; village };
+    }).toArray();
+  };
+
+  // Get all alerts (including resolved) for a specific patient, with metadata
+  public func getAlertsByPatient(
+    patients : List.List<Patient>,
+    alerts : List.List<Alert>,
+    patientId : Nat,
+  ) : [AlertWithMeta] {
+    alerts.filter(func(a) { a.patientId == patientId and not a.resolved }).map<Alert, AlertWithMeta>(func(a) {
       let (patientName, patientCode, village) = switch (patients.find(func(p) { p.id == a.patientId })) {
         case (?p) { (p.name, p.patientCode, p.village) };
         case null { ("Unknown", "P000", "Unknown") };

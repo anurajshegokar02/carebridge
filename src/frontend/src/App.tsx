@@ -15,6 +15,28 @@ const EnterVitals = React.lazy(() => import("./pages/EnterVitals"));
 const DoctorReview = React.lazy(() => import("./pages/DoctorReview"));
 const ActiveAlerts = React.lazy(() => import("./pages/ActiveAlerts"));
 const ManageUsers = React.lazy(() => import("./pages/ManageUsers"));
+const MyRecords = React.lazy(() => import("./pages/MyRecords"));
+
+// Pages allowed per role
+const ROLE_ALLOWED_PAGES: Record<User["role"], PageName[]> = {
+  admin: [
+    "dashboard",
+    "register",
+    "patients",
+    "vitals",
+    "review",
+    "alerts",
+    "users",
+  ],
+  doctor: ["dashboard", "patients", "review", "alerts"],
+  volunteer: ["dashboard", "register", "patients", "vitals", "alerts"],
+  patient: ["my-records"],
+};
+
+function defaultPageForRole(role: User["role"]): PageName {
+  if (role === "patient") return "my-records";
+  return "dashboard";
+}
 
 function PageLoader() {
   return (
@@ -37,6 +59,17 @@ export default function App() {
 
   const isAuthenticated = loginStatus === "success" && !!identity;
 
+  // Guarded navigate — patients can only go to my-records
+  const handleNavigate = React.useCallback(
+    (page: PageName) => {
+      const role = currentUser?.role ?? "volunteer";
+      const allowed = ROLE_ALLOWED_PAGES[role] ?? [];
+      if (!allowed.includes(page)) return;
+      setCurrentPage(page);
+    },
+    [currentUser],
+  );
+
   // Fetch current user once actor is ready and authenticated
   React.useEffect(() => {
     if (!actor || actorFetching || !isAuthenticated) return;
@@ -58,14 +91,18 @@ export default function App() {
 
         const u = await actor.getCurrentUser();
         if (!cancelled && u) {
-          setCurrentUser({
+          const role = u.role as unknown as User["role"];
+          const mapped: User = {
             id: toNumber(u.id),
             principal: u.principal.toString(),
             name: u.name,
             email: u.email,
-            role: u.role as unknown as User["role"],
+            role,
             createdAt: toNumber(u.createdAt),
-          });
+          };
+          setCurrentUser(mapped);
+          // Auto-navigate based on role
+          setCurrentPage(defaultPageForRole(role));
         }
       } catch {
         // user may not be registered yet
@@ -80,9 +117,9 @@ export default function App() {
     };
   }, [actor, actorFetching, isAuthenticated, seedDone]);
 
-  // Poll alert count
+  // Poll alert count (skip for patients — they have their own alert view)
   React.useEffect(() => {
-    if (!actor || !isAuthenticated) return;
+    if (!actor || !isAuthenticated || currentUser?.role === "patient") return;
     const fetchAlerts = async () => {
       try {
         const alerts = await actor.getAlerts();
@@ -94,7 +131,7 @@ export default function App() {
     fetchAlerts();
     const interval = setInterval(fetchAlerts, 30_000);
     return () => clearInterval(interval);
-  }, [actor, isAuthenticated]);
+  }, [actor, isAuthenticated, currentUser?.role]);
 
   const handleLogout = async () => {
     await clear();
@@ -124,10 +161,21 @@ export default function App() {
     return <Login onLoginSuccess={() => {}} />;
   }
 
+  // Patient ID for the patient self-view (from user.patientId if present)
+  const patientId = currentUser?.patientId ?? null;
+
   const renderPage = () => {
-    switch (currentPage) {
+    const role = currentUser?.role ?? "volunteer";
+    const allowed = ROLE_ALLOWED_PAGES[role] ?? [];
+
+    // Guard: if current page is not allowed for this role, show the default
+    const safePage = allowed.includes(currentPage)
+      ? currentPage
+      : defaultPageForRole(role);
+
+    switch (safePage) {
       case "dashboard":
-        return <Dashboard onNavigate={setCurrentPage} />;
+        return <Dashboard onNavigate={handleNavigate} />;
       case "register":
         return <RegisterPatient />;
       case "patients":
@@ -140,15 +188,17 @@ export default function App() {
         return <ActiveAlerts onAlertCountChange={setAlertCount} />;
       case "users":
         return <ManageUsers />;
+      case "my-records":
+        return <MyRecords patientId={patientId} />;
       default:
-        return <Dashboard onNavigate={setCurrentPage} />;
+        return <Dashboard onNavigate={handleNavigate} />;
     }
   };
 
   return (
     <Layout
       currentPage={currentPage}
-      onNavigate={setCurrentPage}
+      onNavigate={handleNavigate}
       currentUser={currentUser}
       alertCount={alertCount}
       onLogout={handleLogout}

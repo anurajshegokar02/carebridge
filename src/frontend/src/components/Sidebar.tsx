@@ -2,6 +2,7 @@ import {
   Activity,
   Bell,
   Heart,
+  HeartPulse,
   LayoutDashboard,
   ShieldCheck,
   Stethoscope,
@@ -56,7 +57,18 @@ const NAV_ITEMS: NavItem[] = [
     icon: Bell,
     roles: ["admin", "doctor", "volunteer"],
   },
-  { id: "users", label: "Manage Users", icon: ShieldCheck, roles: ["admin"] },
+  {
+    id: "users",
+    label: "Manage Users",
+    icon: ShieldCheck,
+    roles: ["admin"],
+  },
+  {
+    id: "my-records",
+    label: "My Health Records",
+    icon: HeartPulse,
+    roles: ["patient"],
+  },
 ];
 
 interface SidebarProps {

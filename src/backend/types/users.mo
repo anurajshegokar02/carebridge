@@ -8,6 +8,7 @@ module {
     #admin;
     #doctor;
     #volunteer;
+    #patient;
   };
 
   public type User = {
@@ -16,6 +17,7 @@ module {
     name : Text;
     email : Text;
     role : UserRole;
+    patientId : ?Nat;
     createdAt : Timestamp;
   };
 };

@@ -12,6 +12,7 @@ export type Timestamp = bigint;
 export interface User {
     id: UserId;
     principal: Principal;
+    patientId?: bigint;
     name: string;
     createdAt: Timestamp;
     role: UserRole;
@@ -60,6 +61,7 @@ export interface Patient {
     condition: string;
 }
 export enum UserRole {
+    patient = "patient",
     admin = "admin",
     doctor = "doctor",
     volunteer = "volunteer"
@@ -78,6 +80,17 @@ export interface backendInterface {
         patientName: string;
     }>>;
     getCurrentUser(): Promise<User | null>;
+    getMyAlerts(): Promise<Array<{
+        alert: Alert;
+        village: string;
+        patientCode: string;
+        patientName: string;
+    }>>;
+    getMyRecord(): Promise<{
+        patient: Patient;
+        volunteerName: string;
+        records: Array<HealthRecord>;
+    } | null>;
     getPatient(id: bigint): Promise<{
         patient: Patient;
         volunteerName: string;
@@ -105,6 +118,7 @@ export interface backendInterface {
     }>;
     getUsers(): Promise<Array<User>>;
     getVolunteers(): Promise<Array<User>>;
+    linkPatientAccount(userId: bigint, patientId: bigint): Promise<User | null>;
     registerUser(name: string, email: string, role: UserRole): Promise<User>;
     resolveAlert(alertId: bigint): Promise<Alert | null>;
     reviewRecord(recordId: bigint, advice: string): Promise<HealthRecord | null>;

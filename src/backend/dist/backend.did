@@ -2,6 +2,7 @@ type UserRole =
  variant {
    admin;
    doctor;
+   patient;
    volunteer;
  };
 type UserId = nat;
@@ -11,6 +12,7 @@ type User =
    email: text;
    id: UserId;
    name: text;
+   patientId: opt nat;
    "principal": principal;
    role: UserRole;
  };
@@ -81,6 +83,21 @@ service : {
        village: text;
      }) query;
   getCurrentUser: () -> (opt User) query;
+  getMyAlerts: () ->
+   (vec
+     record {
+       alert: Alert;
+       patientCode: text;
+       patientName: text;
+       village: text;
+     }) query;
+  getMyRecord: () ->
+   (opt
+     record {
+       patient: Patient;
+       records: vec HealthRecord;
+       volunteerName: text;
+     }) query;
   getPatient: (id: nat) ->
    (opt
      record {
@@ -114,6 +131,7 @@ service : {
     }) query;
   getUsers: () -> (vec User) query;
   getVolunteers: () -> (vec User) query;
+  linkPatientAccount: (userId: nat, patientId: nat) -> (opt User);
   registerUser: (name: text, email: text, role: UserRole) -> (User);
   resolveAlert: (alertId: nat) -> (opt Alert);
   reviewRecord: (recordId: nat, advice: text) -> (opt HealthRecord);

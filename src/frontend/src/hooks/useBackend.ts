@@ -13,6 +13,7 @@ import type {
   Alert,
   AlertWithMeta,
   HealthRecord,
+  MyRecord,
   Patient,
   PatientDetail,
   PatientWithMeta,
@@ -412,5 +413,44 @@ export function useSeedDemoData() {
     onSuccess: () => {
       qc.invalidateQueries();
     },
+  });
+}
+
+// ── Patient self-view (patient role) ──────────────────────────────────────────
+
+export function useMyRecord(patientId: number | null) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<MyRecord | null>({
+    queryKey: ["myRecord", patientId],
+    queryFn: async () => {
+      if (!actor || patientId === null) return null;
+      // Use getPatient to fetch the patient's own record by linked patientId
+      const res = await actor.getPatient(BigInt(patientId));
+      if (!res) return null;
+      return {
+        patient: mapPatient(res.patient),
+        records: res.records.map(mapRecord),
+      };
+    },
+    enabled: !!actor && !isFetching && patientId !== null,
+    refetchInterval: 60_000,
+  });
+}
+
+export function useMyAlerts(patientId: number | null) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<Alert[]>({
+    queryKey: ["myAlerts", patientId],
+    queryFn: async () => {
+      if (!actor || patientId === null) return [];
+      // Filter alerts for this patient from the global alerts list
+      const list = await actor.getAlerts();
+      return list
+        .filter((item) => toNumber(item.alert.patientId) === patientId)
+        .map((item) => mapAlert(item.alert))
+        .filter((a) => !a.resolved);
+    },
+    enabled: !!actor && !isFetching && patientId !== null,
+    refetchInterval: 30_000,
   });
 }

@@ -2,6 +2,7 @@ import Types "../types/users";
 import Common "../types/common";
 import UserLib "../lib/users";
 import List "mo:core/List";
+import Runtime "mo:core/Runtime";
 
 mixin (
   users : List.List<Types.User>,
@@ -48,6 +49,20 @@ mixin (
         let user = UserLib.create(users, counters.nextUserId, caller, name, email, role);
         counters.nextUserId += 1;
         user;
+      };
+    };
+  };
+
+  // Admin-only: link a user account to a patient record
+  public shared ({ caller }) func linkPatientAccount(userId : Nat, patientId : Nat) : async ?Types.User {
+    let callerUser = UserLib.getByPrincipal(users, caller);
+    switch (callerUser) {
+      case null { Runtime.trap("Unauthorized: caller is not a registered user") };
+      case (?cu) {
+        if (cu.role != #admin) {
+          Runtime.trap("Unauthorized: only admins can link patient accounts");
+        };
+        UserLib.linkPatient(users, userId, patientId);
       };
     };
   };

@@ -138,38 +138,83 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           <div className="space-y-1.5">
             {[
               {
+                role: "Admin",
+                email: "admin@carebridge.com",
+                color: "#a855f7",
+                note: "Full access: all features",
+              },
+              {
                 role: "Doctor",
                 email: "doctor@carebridge.com",
                 color: "#3b82f6",
+                note: "Review, alerts, patients",
               },
               {
                 role: "Volunteer",
                 email: "sunita@carebridge.com",
                 color: "#0d9488",
+                note: "Register, vitals, patients",
               },
               {
-                role: "Admin",
-                email: "admin@carebridge.com",
-                color: "#a855f7",
+                role: "Patient",
+                email: "patient@carebridge.com",
+                color: "#f59e0b",
+                note: "View own records only",
               },
-            ].map(({ role, email, color }) => (
+            ].map(({ role, email, color, note }) => (
               <div
                 key={role}
-                className="flex items-center justify-between text-xs"
+                className="flex items-center justify-between gap-2 text-xs"
               >
                 <span
-                  className="font-semibold px-1.5 py-0.5 rounded text-white text-[10px]"
+                  className="font-semibold px-1.5 py-0.5 rounded text-white text-[10px] flex-shrink-0"
                   style={{ backgroundColor: `${color}33`, color }}
                 >
                   {role}
                 </span>
-                <span className="text-white/50">{email}</span>
+                <span className="text-white/50 truncate flex-1 text-center">
+                  {email}
+                </span>
+                <span className="text-white/25 text-[10px] flex-shrink-0 hidden sm:block">
+                  {note}
+                </span>
               </div>
             ))}
           </div>
-          <p className="text-white/30 text-[10px] mt-2">
-            * Demo data is seeded automatically after your first login.
+          <div className="mt-3 pt-2.5 border-t border-white/8">
+            <p className="text-white/25 text-[10px] leading-relaxed">
+              * Demo data is seeded automatically after your first login.
+              Patient account shows health records view only — no clinical
+              tools.
+            </p>
+          </div>
+        </div>
+
+        {/* Role access summary */}
+        <div
+          className="mt-3 rounded-xl p-3.5 border border-white/8"
+          style={{ backgroundColor: "rgba(13,148,136,0.06)" }}
+          data-ocid="role-access-summary"
+        >
+          <p className="text-teal-400/70 text-[10px] uppercase tracking-wider font-medium mb-2">
+            Role-based access
           </p>
+          <div className="grid grid-cols-2 gap-1.5 text-[10px]">
+            {[
+              { role: "Admin", access: "All features" },
+              { role: "Doctor", access: "Review & alerts" },
+              { role: "Volunteer", access: "Vitals & register" },
+              { role: "Patient", access: "Own records only" },
+            ].map(({ role, access }) => (
+              <div key={role} className="flex items-center gap-1.5">
+                <span className="w-1 h-1 rounded-full bg-teal-500/60 flex-shrink-0" />
+                <span className="text-white/40">
+                  <span className="text-white/60 font-medium">{role}:</span>{" "}
+                  {access}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

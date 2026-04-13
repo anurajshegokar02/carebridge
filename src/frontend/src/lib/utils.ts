@@ -182,6 +182,8 @@ export function getRoleBadgeColor(role: UserRoleStr | string): string {
       return "bg-blue-100 text-blue-700 border-blue-200";
     case "volunteer":
       return "bg-teal-100 text-teal-700 border-teal-200";
+    case "patient":
+      return "bg-amber-100 text-amber-700 border-amber-200";
     default:
       return "bg-muted text-muted-foreground border-border";
   }

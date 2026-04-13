@@ -35,6 +35,10 @@ const PAGE_META: Record<PageName, { title: string; subtitle: string }> = {
     title: "Manage Users",
     subtitle: "Administer system users and roles",
   },
+  "my-records": {
+    title: "My Health Records",
+    subtitle: "View your personal health data and vitals history",
+  },
 };
 
 interface LayoutProps {
